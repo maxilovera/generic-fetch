@@ -3,22 +3,21 @@ const Method = {
   GET: "GET",
   POST: "POST",
   PUT: "PUT",
-  DELETE: "DELETE"
+  DELETE: "DELETE",
 };
 
 const ContentType = {
   JSON: "application/json",
-  URL_ENCODED: "application/x-www-form-urlencoded"
+  URL_ENCODED: "application/x-www-form-urlencoded",
 };
 
 const CallType = {
   PUBLIC: false,
-  PRIVATE: true
+  PRIVATE: true,
 };
 
 function makeBody(contentType, data) {
-  if (!data)
-    return null;
+  if (!data) return null;
 
   if (contentType == ContentType.JSON)
     return data ? JSON.stringify(data) : null;
@@ -28,14 +27,24 @@ function makeBody(contentType, data) {
     const values = Object.values(data);
     const pairs = [];
     for (let i = 0; i < keys.length; i++) {
-      pairs.push(encodeURIComponent(keys[i]) + '=' + encodeURIComponent(values[i]));
+      pairs.push(
+        encodeURIComponent(keys[i]) + "=" + encodeURIComponent(values[i])
+      );
     }
-    return pairs.join('&');
+    return pairs.join("&");
   }
 }
 
 // Definir la función que realiza la solicitud HTTP
-async function makeRequest(url, method, data, contentType, callType, successCallback, errorCallback) {
+async function makeRequest(
+  url,
+  method,
+  data,
+  contentType,
+  callType,
+  successCallback,
+  errorCallback
+) {
   // Validar que el método sea válido
   if (!["GET", "POST", "PUT", "DELETE"].includes(method)) {
     throw new Error("Método HTTP no válido");
@@ -44,51 +53,67 @@ async function makeRequest(url, method, data, contentType, callType, successCall
 
   // Validar que los datos no estén vacíos en caso de POST o PUT
   if ((method === "POST" || method === "PUT") && !data) {
-    throw new Error("Los datos del cuerpo no pueden estar vacíos en POST o PUT");
+    throw new Error(
+      "Los datos del cuerpo no pueden estar vacíos en POST o PUT"
+    );
     return;
   }
 
   //Validar que si la pegada es privada exista bearer token, si existe lo agrega como header authorization, sino va a login.html
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem("authToken");
   if (callType && !token) {
-    window.location = 'login.html?reason=private_call_without_token';
+    window.location = "login.html?reason=private_call_without_token";
     return;
   }
 
   // Realizar la solicitud HTTP
   try {
     const response = await fetch(url, {
-      method: method,      
+      method: method,
       body: makeBody(contentType, data),
       headers: {
         "Content-Type": contentType,
-        "Authorization": token ? `Bearer ${token}` : null
+        Authorization: token ? `Bearer ${token}` : null,
       },
     });
 
-    if (response.status === 401) {
-      window.location = 'login.html?reason=token_invalid';
+    if (response.status === 401 || response.status === 400) {
+      window.location = "login.html?reason=token_invalid";
     }
 
-    const responseBody = await response.json();
+    let responseBody = {};
 
-    if ("access_token" in responseBody) {
-      localStorage.setItem('authToken', responseBody.access_token);
+    try {
+      responseBody = await response.json();
+
+      if ("access_token" in responseBody) {
+        localStorage.setItem("authToken", responseBody.access_token);
+      }
+    } catch (err) {
+      console.log("Error getting the response body:", err);
+      responseBody = {};
     }
 
     if (response.ok) {
-      console.info(`Llamada OK: ${url}: status: ${response.status} - ${JSON.stringify(responseBody)}`);
-      successCallback(responseBody)
+      console.info(
+        `Llamada OK: ${url}: status: ${response.status} - ${JSON.stringify(
+          responseBody
+        )}`
+      );
+      successCallback(responseBody);
     } else {
-      console.error(`Error en llamada: ${url}: status: ${response.status} - ${JSON.stringify(responseBody)}`);
-      errorCallback(response.status, responseBody)
-    }    
-  }
-  catch (error) {
-    throw new Error("Generic Request ERROR");
+      console.error(
+        `Error en llamada: ${url}: status: ${
+          response.status
+        } - ${JSON.stringify(responseBody)}`
+      );
+      errorCallback(response.status, responseBody);
+    }
+  } catch (error) {
+    throw new Error(`Request ERROR: ${error.message}`);
   }
 }
 
-function isUserLogged(){
-  return localStorage.getItem('authToken') != null;
+function isUserLogged() {
+  return localStorage.getItem("authToken") != null;
 }
