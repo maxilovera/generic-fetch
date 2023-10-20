@@ -41,7 +41,7 @@ async function makeRequest(
   method,
   data,
   contentType,
-  callType,
+  isPrivateCall,
   successCallback,
   errorCallback
 ) {
@@ -61,7 +61,7 @@ async function makeRequest(
 
   //Validar que si la pegada es privada exista bearer token, si existe lo agrega como header authorization, sino va a login.html
   const token = localStorage.getItem("authToken");
-  if (callType && !token) {
+  if (isPrivateCall && !token) {
     window.location = "login.html?reason=private_call_without_token";
     return;
   }
@@ -73,25 +73,17 @@ async function makeRequest(
       body: makeBody(contentType, data),
       headers: {
         "Content-Type": contentType,
-        Authorization: token ? `Bearer ${token}` : null,
+        Authorization: (token && isPrivateCall) ? `Bearer ${token}` : null,
       },
     });
 
-    if (response.status === 401 || response.status === 400) {
-      window.location = "login.html?reason=token_invalid";
-    }
-
     let responseBody = {};
-
     try {
       responseBody = await response.json();
+    }catch{}
 
-      if ("access_token" in responseBody) {
-        localStorage.setItem("authToken", responseBody.access_token);
-      }
-    } catch (err) {
-      console.log("Error getting the response body:", err);
-      responseBody = {};
+    if ("access_token" in responseBody) {
+      localStorage.setItem("authToken", responseBody.access_token);
     }
 
     if (response.ok) {
@@ -107,6 +99,11 @@ async function makeRequest(
           response.status
         } - ${JSON.stringify(responseBody)}`
       );
+
+      if (response.status === 401) {
+        window.location = "login.html?reason=token_invalid";
+      }
+
       errorCallback(response.status, responseBody);
     }
   } catch (error) {

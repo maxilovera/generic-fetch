@@ -2,9 +2,7 @@
 // Ejemplo de uso
 const url = "http://localhost:8080/aulas";
 
-document.addEventListener("DOMContentLoaded", function(eventDOM){
-  debugger;
-
+document.addEventListener("DOMContentLoaded", function(eventDOM){  
     if (!isUserLogged()){
       window.location = 'login.html?reason=login_required';
     }
