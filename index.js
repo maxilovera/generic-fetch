@@ -15,10 +15,10 @@ document.addEventListener("DOMContentLoaded", function(eventDOM){
     })
 })
 
-function obtenerAulas(){
+async function obtenerAulas(){
   const nombre = document.getElementById("FiltroNombre").value;
   
-  makeRequest(`${url}?nombre=${nombre}`, Method.GET, null, ContentType.JSON, CallType.PRIVATE, successFn, errorFn);
+  await makeRequest(`${url}?nombre=${nombre}`, Method.GET, null, ContentType.JSON, CallType.PRIVATE, successFn, errorFn);
 }
 
 function successFn(data) {

@@ -30,14 +30,6 @@
                 <input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword" required
                     placeholder="Confirma tu contraseña">
             </div>
-            <div class="form-group">
-                <label for="Role">Rol:</label>
-                <select id="Role" class="form-control" name="Role" required>
-                    <option value="OPERADOR" selected>OPERADOR</option>
-                    <option value="ADMIN">ADMIN</option>
-                    <option value="CONDUCTOR">CONDUCTOR</option>
-                </select>
-            </div>
             <div class="form-group text-center">
                 <button type="button" class="btn btn-success btn-block" id="btnRegistrarse">Registrarme</button>
             </div>
@@ -50,22 +42,6 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="request.js"></script>
     <script src="register.js"></script>
-
-    <script>
-        document.getElementById('btnRegistrarse').addEventListener('click', function () {
-            const emailInput = document.getElementById('email');
-            const form = document.getElementById('registerForm');
-            
-            // Validación de email con una expresión regular
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!emailRegex.test(emailInput.value)) {
-                emailInput.classList.add('is-invalid');
-                alert('Por favor ingresa un correo electrónico válido.');
-            } else {
-                emailInput.classList.remove('is-invalid');
-            }
-        });
-    </script>
 </body>
 
 </html>

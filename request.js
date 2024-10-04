@@ -107,7 +107,8 @@ async function makeRequest(
       errorCallback(response.status, responseBody);
     }
   } catch (error) {
-    throw new Error(`Request ERROR: ${error.message}`);
+    console.error("Error: ", error?.message || error)
+    throw new Error(`Request ERROR: ${error?.message || error}`);
   }
 }
 

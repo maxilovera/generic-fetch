@@ -2,7 +2,7 @@
 const url = "http://w220066.ferozo.com/tp_prog2/api/account/login";
 
 document.addEventListener("DOMContentLoaded", function(eventDOM){
-    document.getElementById("btnIngresar").addEventListener("click",function(eventClick){
+    document.getElementById("btnIngresar").addEventListener("click", async function(eventClick){
         eventClick.preventDefault();
         
         const data = {
@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function(eventDOM){
           password: document.getElementById("password").value 
         };
 
-        makeRequest(url, Method.POST, data, ContentType.URL_ENCODED, CallType.PUBLIC, successFn, errorFn);
+        await makeRequest(url, Method.POST, data, ContentType.URL_ENCODED, CallType.PUBLIC, successFn, errorFn);
 
         return false;
     })

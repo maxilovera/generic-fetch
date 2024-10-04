@@ -1,18 +1,30 @@
 // Ejemplo de uso
+// TODO: Cambiar URL
 const url = "http://w220066.ferozo.com/tp_prog2/api/account/register";
 
 document.addEventListener("DOMContentLoaded", function (eventDOM) {
   document
     .getElementById("btnRegistrarse")
-    .addEventListener("click", function (eventClick) {
+    .addEventListener("click", async function (eventClick) {
       eventClick.preventDefault();
+
+      const emailInput = document.getElementById('email');
+
+      // Validación de email con una expresión regular
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(emailInput.value)) {
+        emailInput.classList.add('is-invalid');
+        return false;
+      } else {
+        emailInput.classList.remove('is-invalid');
+      }
 
       const inputPassword = document.getElementById("password").value;
       const inputConfirmPassword =
         document.getElementById("ConfirmPassword").value;
 
-      if (inputPassword !== inputConfirmPassword) {
-        alert("Password and Confirm Password must be the same");
+      if (inputPassword === "" || inputConfirmPassword === "" || inputPassword !== inputConfirmPassword) {
+        alert("Password and Confirm Password must be the same and can not be empty");
         return false;
       }
 
@@ -21,18 +33,21 @@ document.addEventListener("DOMContentLoaded", function (eventDOM) {
         email: document.getElementById("email").value,
         password: inputPassword,
         ConfirmPassword: inputConfirmPassword,
-        Role: document.getElementById("Role").value,
       };
 
-      makeRequest(
-        url,
-        Method.POST,
-        data,
-        ContentType.URL_ENCODED,
-        CallType.PUBLIC,
-        successFn,
-        errorFn
-      );
+      try {
+        await makeRequest(
+          url,
+          Method.POST,
+          data,
+          ContentType.URL_ENCODED,
+          CallType.PUBLIC,
+          successFn,
+          errorFn
+        );
+      } catch (error) {
+        console.error("Error registering: ", error?.message || error)
+      }
 
       return false;
     });
