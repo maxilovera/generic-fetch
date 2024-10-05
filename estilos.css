@@ -7,7 +7,6 @@ form > div label{
 }
 
 body {
-    background-image: url('backgound-image.jpeg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;

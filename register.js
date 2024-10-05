@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", function (eventDOM) {
         email: document.getElementById("email").value,
         password: inputPassword,
         ConfirmPassword: inputConfirmPassword,
+        Role: "ADMIN" // TODO: Borrar a futuro, por ahora está OK
       };
 
       try {
@@ -60,4 +61,8 @@ function successFn(response) {
 
 function errorFn(status, response) {
   console.log("Falla:", response);
+  alert(response?.ModelState?.["model.Password"]?.[0] ||
+    response?.ModelState?.["model.Role"]?.[0] ||
+    response?.ModelState?.[""]?.[0] ||
+    "Intente nuevamente")
 }
